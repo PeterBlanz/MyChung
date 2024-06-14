@@ -1,0 +1,44 @@
+# use glob syntax
+syntax: glob
+
+# .vs folder and other vs stuff
+.vs/
+*.vcxproj.user
+
+# Dr. Explain work files
+*.gui.bak
+
+# NDepend output
+NDependOut
+
+# Automatic testing
+/AutoTest/*Test.csv
+/AutoTest/*Perf.csv
+
+# Build artifacts
+/ACTSense_maps.zip
+/ACTSense_installer*.exe
+/ACTSenseSetupFile.txt
+/SoftwareDocuments/changes.txt
+
+# Build output directories
+obj/
+/[Dd]ebug/
+/[Rr]elease/
+**/FatRatLibrary/[Dd]ebug/
+**/FatRatLibrary/[Rr]elease/
+**/FSAlgorithms/[Dd]ebug/
+**/FSAlgorithms/[Rr]elease/
+**/MSAlgorithms/[Dd]ebug/
+**/MSAlgorithms/[Rr]elease/
+**/NativeTools/[Dd]ebug/
+**/NativeTools/[Rr]elease/
+**/CoreUtilities/[Dd]ebug/
+**/CoreUtilities/[Rr]elease/
+**/EventLogging/[Dd]ebug/
+**/EventLogging/[Rr]elease/
+/release_secure/
+
+# APC project log files etc.
+/ApcTemplates/*.log
+/ApcTemplates/snapshots_auto/
