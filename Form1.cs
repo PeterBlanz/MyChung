@@ -17,6 +17,10 @@ namespace MyChung
         public Form1()
         {
             InitializeComponent();
+            txtAirDens.Text = (1.2215).ToString();
+            txtCrr.Text = (0.0028).ToString();
+            txtMass.Text = (90.0).ToString();
+            txtEff.Text = (98.0).ToString();
         }
 
         private void ProcessFitFile(string fileName)
@@ -51,29 +55,35 @@ namespace MyChung
 
         private void DoChungAnalysis(List<double> timeValues, List<double> powerValues, List<double> speedValues)
         {
+            // check data sets
             if (timeValues.Count != powerValues.Count || timeValues.Count != speedValues.Count)
             {
                 MessageBox.Show("Data set lengths must match!");
                 return;
             }
 
-            // get parameters
-            ChungParameters chungParams = new ChungParameters();
-            chungParams.AirDensity = 1.2215;
-            chungParams.Mass = 90.55;
-            chungParams.RollingResistance = 0.0028;
-            chungParams.CdA = 0.25;
+            // parse parameters TODO: individual sanity checks
+            if (!double.TryParse(txtAirDens.Text, out double airDens) || !double.TryParse(txtMass.Text, out double mass) || !double.TryParse(txtCrr.Text, out double crr) || !double.TryParse(txtEff.Text, out double eff))
+            {
+                MessageBox.Show("Failed to parse parameters!");
+                return;
+            }
+
+            // pre-multiply power values
+            eff *= 0.01;
+            for (int i = 0; i < powerValues.Count; i++) powerValues[i] *= eff;
 
             // solve CdA
+            ChungParameters chungParams = new ChungParameters { AirDensity = airDens, Mass = mass, RollingResistance = crr, CdA = 0.25 };
             double totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues);
             int iterationDirection = Math.Sign(totalVirtualElevation);
-            for(int i = 0; i < 1000000; i++)
+            for (int i = 0; i < 1000000; i++)
             {
                 if (Math.Sign(totalVirtualElevation) != iterationDirection) break;
                 chungParams.CdA += iterationDirection * 0.000001;
                 totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues);
             }
-            MessageBox.Show(chungParams.CdA.ToString());
+            MessageBox.Show(chungParams.CdA.ToString("0.00000"));
         }
 
         private double GetTotalVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues)
