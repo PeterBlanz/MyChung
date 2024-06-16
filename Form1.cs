@@ -83,7 +83,11 @@ namespace MyChung
                 chungParams.CdA += iterationDirection * 0.000001;
                 totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues);
             }
-            MessageBox.Show(chungParams.CdA.ToString("0.00000"));
+
+            // place result in clipboard, show message
+            string cdaString = chungParams.CdA.ToString("0.00000");
+            Clipboard.SetText(cdaString);
+            MessageBox.Show($"CdA: {cdaString} m²\nResult has been copied into clipboard.");
         }
 
         private double GetTotalVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues)

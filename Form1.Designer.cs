@@ -187,7 +187,8 @@ namespace MyChung
             this.Controls.Add(this.butBrowse);
             this.MinimumSize = new System.Drawing.Size(400, 350);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.ShowIcon = false;
+            this.Text = "Chung Analysis";
             this.ResumeLayout(false);
             this.PerformLayout();
 
