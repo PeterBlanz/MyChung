@@ -87,7 +87,7 @@ namespace MyChung
             // place result in clipboard, show message
             string cdaString = chungParams.CdA.ToString("0.00000");
             Clipboard.SetText(cdaString);
-            MessageBox.Show($"CdA: {cdaString} m²\nResult has been copied into clipboard.");
+            MessageBox.Show($"CdA: {cdaString} m²\n\nResult has been copied into clipboard.");
         }
 
         private double GetTotalVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues)
@@ -102,17 +102,23 @@ namespace MyChung
 
         private double GetVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues, int i)
         {
-            double dt = 0.5 * (timeValues[i + 1] - timeValues[i - 1]);
-            double a = (speedValues[i + 1] - speedValues[i - 1]) / (2 * dt);
-            double v = speedValues[i];
+            // get parameters
+            const double g = 9.81;
             double Crr = chungParams.RollingResistance;
             double CdA = chungParams.CdA;
             double m = chungParams.Mass;
-            double w = powerValues[i];
             double rho = chungParams.AirDensity;
-            const double g = 9.81;
+
+            // calculate acceleration
+            double dt = 0.5 * (timeValues[i + 1] - timeValues[i - 1]);
+            double a = (speedValues[i + 1] - speedValues[i - 1]) / (2 * dt);
+
+            // calculate slope
+            double v = speedValues[i];
+            double w = powerValues[i];
             double s = w / (m * g * v) - Crr - a / g - (rho * CdA * v * v) / (2 * m * g);
 
+            // return virtual elevation
             return s * v * dt;
         }
 
