@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DensityForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DensityForm.Designer.cs">
+      <DependentUpon>DensityForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Dynastream\Fit\AccumulatedField.cs" />
     <Compile Include="Dynastream\Fit\Accumulator.cs" />
     <Compile Include="Dynastream\Fit\BufferedMesgBroadcaster.cs" />
@@ -384,6 +390,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="DensityForm.resx">
+      <DependentUpon>DensityForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
