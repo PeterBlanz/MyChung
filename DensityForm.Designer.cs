@@ -96,16 +96,19 @@ namespace MyChung
             // butOK
             // 
             this.butOK.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.butOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.butOK.Location = new System.Drawing.Point(12, 197);
             this.butOK.Name = "butOK";
             this.butOK.Size = new System.Drawing.Size(165, 37);
             this.butOK.TabIndex = 19;
             this.butOK.Text = "OK";
             this.butOK.UseVisualStyleBackColor = true;
+            this.butOK.Click += new System.EventHandler(this.ButOK_Click);
             // 
             // button1
             // 
             this.button1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.button1.Location = new System.Drawing.Point(192, 197);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(165, 37);

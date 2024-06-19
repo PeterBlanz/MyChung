@@ -14,6 +14,8 @@ namespace MyChung
 {
     public partial class MainForm : Form
     {
+        private readonly DensityForm _densForm = new DensityForm();
+
         public MainForm()
         {
             InitializeComponent();
@@ -140,6 +142,12 @@ namespace MyChung
             public double RollingResistance { get; set; }
             public double AirDensity { get; set; }
             public double CdA { get; set; }
+        }
+
+        private void ButDens_Click(object sender, EventArgs e)
+        {
+            if (_densForm.ShowDialog(this) != DialogResult.OK) return;
+            txtAirDens.Text = _densForm.AirDensity.ToString("0.0000");
         }
     }
 }

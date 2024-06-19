@@ -39,7 +39,7 @@ namespace MyChung
             this.label3 = new System.Windows.Forms.Label();
             this.txtCrr = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.butDens = new System.Windows.Forms.Button();
             this.txtEff = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -139,15 +139,16 @@ namespace MyChung
             this.label4.TabIndex = 8;
             this.label4.Text = "Coefficient of rolling resistance";
             // 
-            // button1
+            // butDens
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(297, 78);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 20);
-            this.button1.TabIndex = 10;
-            this.button1.Text = "...";
-            this.button1.UseVisualStyleBackColor = true;
+            this.butDens.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.butDens.Location = new System.Drawing.Point(297, 78);
+            this.butDens.Name = "butDens";
+            this.butDens.Size = new System.Drawing.Size(75, 20);
+            this.butDens.TabIndex = 10;
+            this.butDens.Text = "...";
+            this.butDens.UseVisualStyleBackColor = true;
+            this.butDens.Click += new System.EventHandler(this.ButDens_Click);
             // 
             // txtEff
             // 
@@ -167,14 +168,14 @@ namespace MyChung
             this.label5.TabIndex = 11;
             this.label5.Text = "Drive train efficiency (%)";
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(384, 311);
             this.Controls.Add(this.txtEff);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.butDens);
             this.Controls.Add(this.txtCrr);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txtMass);
@@ -186,7 +187,7 @@ namespace MyChung
             this.Controls.Add(this.txtFileName);
             this.Controls.Add(this.butBrowse);
             this.MinimumSize = new System.Drawing.Size(400, 350);
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.ShowIcon = false;
             this.Text = "Chung Analysis";
             this.ResumeLayout(false);
@@ -206,7 +207,7 @@ namespace MyChung
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtCrr;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button butDens;
         private System.Windows.Forms.TextBox txtEff;
         private System.Windows.Forms.Label label5;
     }
