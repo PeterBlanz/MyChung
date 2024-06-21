@@ -42,6 +42,10 @@ namespace MyChung
             this.butDens = new System.Windows.Forms.Button();
             this.txtEff = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.txtTrimMinDist = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtTrimMaxDist = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // butBrowse
@@ -77,7 +81,7 @@ namespace MyChung
             // 
             this.butProcess.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.butProcess.Location = new System.Drawing.Point(12, 264);
+            this.butProcess.Location = new System.Drawing.Point(12, 380);
             this.butProcess.Name = "butProcess";
             this.butProcess.Size = new System.Drawing.Size(360, 37);
             this.butProcess.TabIndex = 3;
@@ -168,11 +172,51 @@ namespace MyChung
             this.label5.TabIndex = 11;
             this.label5.Text = "Drive train efficiency (%)";
             // 
+            // txtTrimMinDist
+            // 
+            this.txtTrimMinDist.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTrimMinDist.Location = new System.Drawing.Point(12, 274);
+            this.txtTrimMinDist.Name = "txtTrimMinDist";
+            this.txtTrimMinDist.Size = new System.Drawing.Size(360, 20);
+            this.txtTrimMinDist.TabIndex = 14;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 258);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(154, 13);
+            this.label6.TabIndex = 13;
+            this.label6.Text = "Trim if distance smaller than (m)";
+            // 
+            // txtTrimMaxDist
+            // 
+            this.txtTrimMaxDist.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTrimMaxDist.Location = new System.Drawing.Point(12, 323);
+            this.txtTrimMaxDist.Name = "txtTrimMaxDist";
+            this.txtTrimMaxDist.Size = new System.Drawing.Size(360, 20);
+            this.txtTrimMaxDist.TabIndex = 16;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(12, 307);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(155, 13);
+            this.label7.TabIndex = 15;
+            this.label7.Text = "Trim if distance greater than (m)";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 311);
+            this.ClientSize = new System.Drawing.Size(384, 427);
+            this.Controls.Add(this.txtTrimMaxDist);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.txtTrimMinDist);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.txtEff);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.butDens);
@@ -210,6 +254,10 @@ namespace MyChung
         private System.Windows.Forms.Button butDens;
         private System.Windows.Forms.TextBox txtEff;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox txtTrimMinDist;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox txtTrimMaxDist;
+        private System.Windows.Forms.Label label7;
     }
 }
 

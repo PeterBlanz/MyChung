@@ -23,6 +23,8 @@ namespace MyChung
             txtCrr.Text = (0.0028).ToString();
             txtMass.Text = (90.0).ToString();
             txtEff.Text = (98.0).ToString();
+            txtTrimMinDist.Text = (0.0).ToString();
+            txtTrimMaxDist.Text = (1000000.0).ToString();
         }
 
         private void ProcessFitFile(string fileName)
@@ -31,6 +33,13 @@ namespace MyChung
             List<double> timeValues = new List<double>();
             List<double> powerValues = new List<double>();
             List<double> speedValues = new List<double>();
+
+            // parse limits
+            if (!double.TryParse(txtTrimMinDist.Text, out double trimMinDist) || !double.TryParse(txtTrimMaxDist.Text, out double trimMaxDist))
+            {
+                MessageBox.Show("Failed to parse trim limits!");
+                return;
+            }
 
             // attempt to open .FIT file
             using (FileStream fitSource = new FileStream(fileName, FileMode.Open))
@@ -45,6 +54,20 @@ namespace MyChung
                 FitMessages fitMessages = fitListener.FitMessages;
                 foreach (RecordMesg mesg in fitMessages.RecordMesgs)
                 {
+                    // check trimming conditions
+                    bool trim = false;
+                    foreach (Field field in mesg.GetOverrideField(RecordMesg.FieldDefNum.Distance))
+                    {
+                        double dist = Convert.ToDouble(field.GetValue());
+                        if (dist < trimMinDist || dist > trimMaxDist)
+                        {
+                            trim = true;
+                            break;
+                        }
+                    }
+                    if (trim) continue;
+
+                    // add data
                     foreach (Field field in mesg.GetOverrideField(RecordMesg.FieldDefNum.Timestamp)) timeValues.Add(Convert.ToDouble(field.GetValue()));
                     foreach (Field field in mesg.GetOverrideField(RecordMesg.FieldDefNum.Power)) powerValues.Add(Convert.ToDouble(field.GetValue()));
                     foreach (Field field in mesg.GetOverrideField(RecordMesg.FieldDefNum.Speed)) speedValues.Add(Convert.ToDouble(field.GetValue()));
