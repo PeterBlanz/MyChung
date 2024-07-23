@@ -31,6 +31,7 @@ namespace MyChung
         {
             // create empty lists
             List<double> timeValues = new List<double>();
+            List<double> distValues = new List<double>();
             List<double> powerValues = new List<double>();
             List<double> speedValues = new List<double>();
             List<double> airSpeedValues = new List<double>();
@@ -65,6 +66,7 @@ namespace MyChung
                             trim = true;
                             break;
                         }
+                        distValues.Add(dist);
                     }
                     if (trim) continue;
 
@@ -75,10 +77,19 @@ namespace MyChung
                 }
             }
 
-            // TEMP!!! generate air speed values
-            foreach(double v in speedValues)
+            // check data sets
+            if (timeValues.Count != powerValues.Count || timeValues.Count != speedValues.Count || timeValues.Count != distValues.Count)
             {
-                airSpeedValues.Add(v);
+                MessageBox.Show("Data set lengths must match!");
+                return;
+            }
+
+            // TEMP!!! generate air speed values for a 400-meter velodrome
+            double A = 6, w = 2 * Math.PI / 400, d = 2 * Math.PI * -225 / 400;
+            for(int i = 0; i < speedValues.Count; i++)
+            {
+                double wind = A * Math.Sin(w * distValues[i] + d);
+                airSpeedValues.Add(speedValues[i] + wind);
             }
 
             // analyze
@@ -87,13 +98,6 @@ namespace MyChung
 
         private void DoChungAnalysis(List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> airSpeedValues)
         {
-            // check data sets
-            if (timeValues.Count != powerValues.Count || timeValues.Count != speedValues.Count || timeValues.Count != airSpeedValues.Count)
-            {
-                MessageBox.Show("Data set lengths must match!");
-                return;
-            }
-
             // parse parameters TODO: individual sanity checks
             if (!double.TryParse(txtAirDens.Text, out double airDens) || !double.TryParse(txtMass.Text, out double mass) || !double.TryParse(txtCrr.Text, out double crr) || !double.TryParse(txtEff.Text, out double eff))
             {
