@@ -85,10 +85,10 @@ namespace MyChung
             }
 
             // TEMP!!! generate air speed values for a 400-meter velodrome
-            double A = 5, w = 2 * Math.PI / 400, d = 2 * Math.PI * 75 / 400;
+            double A = 5, omega = 2 * Math.PI / 400, d = 2 * Math.PI * 75 / 400;
             for(int i = 0; i < speedValues.Count; i++)
             {
-                double wind = A * Math.Cos(w * distValues[i] + d);
+                double wind = A * Math.Cos(omega * distValues[i] + d);
                 airSpeedValues.Add(speedValues[i] + wind);
             }
 
