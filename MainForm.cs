@@ -33,6 +33,7 @@ namespace MyChung
             List<double> timeValues = new List<double>();
             List<double> powerValues = new List<double>();
             List<double> speedValues = new List<double>();
+            List<double> airSpeedValues = new List<double>();
 
             // parse limits
             if (!double.TryParse(txtTrimMinDist.Text, out double trimMinDist) || !double.TryParse(txtTrimMaxDist.Text, out double trimMaxDist))
@@ -74,14 +75,20 @@ namespace MyChung
                 }
             }
 
+            // TEMP!!! generate air speed values
+            foreach(double v in speedValues)
+            {
+                airSpeedValues.Add(v);
+            }
+
             // analyze
-            DoChungAnalysis(timeValues, powerValues, speedValues);
+            DoChungAnalysis(timeValues, powerValues, speedValues, airSpeedValues);
         }
 
-        private void DoChungAnalysis(List<double> timeValues, List<double> powerValues, List<double> speedValues)
+        private void DoChungAnalysis(List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> airSpeedValues)
         {
             // check data sets
-            if (timeValues.Count != powerValues.Count || timeValues.Count != speedValues.Count)
+            if (timeValues.Count != powerValues.Count || timeValues.Count != speedValues.Count || timeValues.Count != airSpeedValues.Count)
             {
                 MessageBox.Show("Data set lengths must match!");
                 return;
@@ -100,13 +107,13 @@ namespace MyChung
 
             // solve CdA
             ChungParameters chungParams = new ChungParameters { AirDensity = airDens, Mass = mass, RollingResistance = crr, CdA = 0.25 };
-            double totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues);
+            double totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues, airSpeedValues);
             int iterationDirection = Math.Sign(totalVirtualElevation);
             for (int i = 0; i < 1000000; i++)
             {
                 if (Math.Sign(totalVirtualElevation) != iterationDirection) break;
                 chungParams.CdA += iterationDirection * 0.000001;
-                totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues);
+                totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues, airSpeedValues);
             }
 
             // place result in clipboard, show message
@@ -115,17 +122,17 @@ namespace MyChung
             MessageBox.Show($"CdA: {cdaString} m²\n\nResult has been copied into clipboard.");
         }
 
-        private double GetTotalVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues)
+        private double GetTotalVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> airSpeedValues)
         {
             double totalVirtualElevation = 0;
             for (int i = 1; i < timeValues.Count - 1; i++)
             {
-                totalVirtualElevation += GetVirtualElevation(chungParams, timeValues, powerValues, speedValues, i);
+                totalVirtualElevation += GetVirtualElevation(chungParams, timeValues, powerValues, speedValues, airSpeedValues, i);
             }
             return totalVirtualElevation;
         }
 
-        private double GetVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues, int i)
+        private double GetVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> airSpeedValues, int i)
         {
             // get parameters
             const double g = 9.81;
@@ -140,8 +147,9 @@ namespace MyChung
 
             // calculate slope
             double v = speedValues[i];
+            double va = airSpeedValues[i];
             double w = powerValues[i];
-            double s = w / (m * g * v) - Crr - a / g - (rho * CdA * v * v) / (2 * m * g);
+            double s = w / (m * g * v) - Crr - a / g - (rho * CdA * va * va) / (2 * m * g);
 
             // return virtual elevation
             return s * v * dt;
