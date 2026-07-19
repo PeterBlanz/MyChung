@@ -65,28 +65,15 @@ namespace MyChung
                 foreach (RecordMesg mesg in fitMessages.RecordMesgs)
                 {
                     // check trimming conditions
-                    bool trim = false;
-                    foreach (Field field in mesg.GetOverrideField(RecordMesg.FieldDefNum.Distance))
-                    {
-                        double dist = Convert.ToDouble(field.GetValue());
-                        if (dist < trimMinDist || dist > trimMaxDist)
-                        {
-                            trim = true;
-                            break;
-                        }
-                        distValues.Add(dist);
-                    }
-                    if (trim) continue;
+                    double dist = mesg.Fields.FirstOrDefault(f => f.Name.ToLower() == "distance").ValueOrDefault(distValues);
+                    if (dist < trimMinDist || dist > trimMaxDist) continue;
+                    distValues.Add(dist);
 
                     // add data
-                    foreach (Field field in mesg.GetOverrideField(RecordMesg.FieldDefNum.Timestamp)) timeValues.Add(Convert.ToDouble(field.GetValue()));
-                    foreach (Field field in mesg.GetOverrideField(RecordMesg.FieldDefNum.Power)) powerValues.Add(Convert.ToDouble(field.GetValue()));
-                    foreach (Field field in mesg.GetOverrideField(RecordMesg.FieldDefNum.Speed)) speedValues.Add(Convert.ToDouble(field.GetValue()));
-
-                    // find wind data
-                    DeveloperField df = mesg.DeveloperFields.FirstOrDefault(f => f.Name.ToLower() == "wind");
-                    if (df != null) windValues.Add(Convert.ToDouble(df.GetValue()));
-                    else windValues.Add(0.0);
+                    timeValues.Add(mesg.Fields.FirstOrDefault(f => f.Name.ToLower() == "timestamp").ValueOrDefault(timeValues));
+                    powerValues.Add(mesg.Fields.FirstOrDefault(f => f.Name.ToLower() == "power").ValueOrDefault(powerValues));
+                    speedValues.Add(mesg.Fields.FirstOrDefault(f => f.Name.ToLower() == "speed").ValueOrDefault(speedValues));
+                    windValues.Add(mesg.DeveloperFields.FirstOrDefault(f => f.Name.ToLower() == "wind").ValueOrDefault(windValues));
                 }
             }
 
@@ -174,7 +161,7 @@ namespace MyChung
 
             // place result in clipboard, show message
             string cdaString = chungParams.CdA.ToString("0.00000");
-            Clipboard.SetText(cdaString);
+            Clipboard.SetText($"{timeValues[0]}\t{cdaString}");
             if (!silent) MessageBox.Show($"CdA: {cdaString} m²\n\nResult has been copied into clipboard.");
             return chungParams.CdA;
         }
@@ -236,6 +223,16 @@ namespace MyChung
         {
             if (_densForm.ShowDialog(this) != DialogResult.OK) return;
             txtAirDens.Text = _densForm.AirDensity.ToString("0.0000");
+        }
+    }
+
+    public static class FieldExtensions
+    {
+        public static double ValueOrDefault(this FieldBase field, List<double> values)
+        {
+            if (field != null) return Convert.ToDouble(field.GetValue());
+            if (values.Count > 0) return values[values.Count - 1];
+            else return 0.0;
         }
     }
 }
