@@ -25,6 +25,7 @@ namespace MyChung
             txtEff.Text = (98.0).ToString();
             txtTrimMinDist.Text = (0.0).ToString();
             txtTrimMaxDist.Text = (1000000.0).ToString();
+            txtWindCalib.Text = (0.105).ToString();
         }
 
         private void ProcessFitFile(string fileName)
@@ -34,12 +35,19 @@ namespace MyChung
             List<double> distValues = new List<double>();
             List<double> powerValues = new List<double>();
             List<double> speedValues = new List<double>();
-            List<double> airSpeedValues = new List<double>();
+            List<double> windValues = new List<double>();
 
             // parse limits
             if (!double.TryParse(txtTrimMinDist.Text, out double trimMinDist) || !double.TryParse(txtTrimMaxDist.Text, out double trimMaxDist))
             {
                 MessageBox.Show("Failed to parse trim limits!");
+                return;
+            }
+
+            // parse wind calibration factor
+            if (!double.TryParse(txtWindCalib.Text, out double windCalib))
+            {
+                MessageBox.Show("Failed to parse wind calibration factor!");
                 return;
             }
 
@@ -74,6 +82,11 @@ namespace MyChung
                     foreach (Field field in mesg.GetOverrideField(RecordMesg.FieldDefNum.Timestamp)) timeValues.Add(Convert.ToDouble(field.GetValue()));
                     foreach (Field field in mesg.GetOverrideField(RecordMesg.FieldDefNum.Power)) powerValues.Add(Convert.ToDouble(field.GetValue()));
                     foreach (Field field in mesg.GetOverrideField(RecordMesg.FieldDefNum.Speed)) speedValues.Add(Convert.ToDouble(field.GetValue()));
+
+                    // find wind data
+                    DeveloperField df = mesg.DeveloperFields.FirstOrDefault(f => f.Name.ToLower() == "wind");
+                    if (df != null) windValues.Add(Convert.ToDouble(df.GetValue()));
+                    else windValues.Add(0.0);
                 }
             }
 
@@ -84,25 +97,64 @@ namespace MyChung
                 return;
             }
 
-            // TEMP!!! generate air speed values for a 400-meter velodrome
-            double A = 5, omega = 2 * Math.PI / 400, d = 2 * Math.PI * 75 / 400;
-            for(int i = 0; i < speedValues.Count; i++)
-            {
-                double wind = A * Math.Cos(omega * distValues[i] + d);
-                airSpeedValues.Add(speedValues[i] + wind);
-            }
-
             // analyze
-            DoChungAnalysis(timeValues, powerValues, speedValues, airSpeedValues);
+            DoChungAnalysis(timeValues, powerValues, speedValues, windValues, windCalib);
         }
 
-        private void DoChungAnalysis(List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> airSpeedValues)
+        private double Calibrate(List<double> timeValues, List<double> distValues, List<double> powerValues, List<double> speedValues, List<double> windValues, double windCalib)
+        {
+            // TEMP!! better splitting needed
+            List<double> lapTimeValues = new List<double>();
+            List<double> lapPowerValues = new List<double>();
+            List<double> lapSpeedValues = new List<double>();
+            List<double> lapWindValues = new List<double>();
+            List<double> cdaValues = new List<double>();
+            int threshold = 400;
+            for (int i = 0; i < distValues.Count; i++)
+            {
+                lapTimeValues.Add(timeValues[i]);
+                lapPowerValues.Add(powerValues[i]);
+                lapSpeedValues.Add(speedValues[i]);
+                lapWindValues.Add(windValues[i]);
+
+                if (distValues[i] > threshold)
+                {
+                    cdaValues.Add(DoChungAnalysis(lapTimeValues, lapPowerValues, lapSpeedValues, lapWindValues, windCalib, true));
+                    threshold += 400;
+                    lapTimeValues.Clear();
+                    lapPowerValues.Clear();
+                    lapSpeedValues.Clear();
+                    lapWindValues.Clear();
+                }
+            }
+
+            cdaValues.RemoveAt(0);
+            cdaValues.RemoveAt(cdaValues.Count - 1);
+            double stdev = GetStandardDeviation(cdaValues);
+            return stdev;
+        }
+
+        private double GetStandardDeviation(List<double> values)
+        {
+            double mean = values.Sum() / values.Count;
+
+            double sumOfSquares = 0;
+            foreach (double val in values)
+            {
+                double diff = val - mean;
+                sumOfSquares += diff * diff;
+            }
+
+            return Math.Sqrt(sumOfSquares / (values.Count - 1));
+        }
+
+        private double DoChungAnalysis(List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> windValues, double windCalib, bool silent = false)
         {
             // parse parameters TODO: individual sanity checks
             if (!double.TryParse(txtAirDens.Text, out double airDens) || !double.TryParse(txtMass.Text, out double mass) || !double.TryParse(txtCrr.Text, out double crr) || !double.TryParse(txtEff.Text, out double eff))
             {
                 MessageBox.Show("Failed to parse parameters!");
-                return;
+                return double.NaN;
             }
 
             // pre-multiply power values
@@ -111,32 +163,33 @@ namespace MyChung
 
             // solve CdA
             ChungParameters chungParams = new ChungParameters { AirDensity = airDens, Mass = mass, RollingResistance = crr, CdA = 0.25 };
-            double totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues, airSpeedValues);
+            double totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues, windValues, windCalib);
             int iterationDirection = Math.Sign(totalVirtualElevation);
             for (int i = 0; i < 1000000; i++)
             {
                 if (Math.Sign(totalVirtualElevation) != iterationDirection) break;
                 chungParams.CdA += iterationDirection * 0.000001;
-                totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues, airSpeedValues);
+                totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues, windValues, windCalib);
             }
 
             // place result in clipboard, show message
             string cdaString = chungParams.CdA.ToString("0.00000");
             Clipboard.SetText(cdaString);
-            MessageBox.Show($"CdA: {cdaString} m²\n\nResult has been copied into clipboard.");
+            if (!silent) MessageBox.Show($"CdA: {cdaString} m²\n\nResult has been copied into clipboard.");
+            return chungParams.CdA;
         }
 
-        private double GetTotalVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> airSpeedValues)
+        private double GetTotalVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> windValues, double windCalib)
         {
             double totalVirtualElevation = 0;
             for (int i = 1; i < timeValues.Count - 1; i++)
             {
-                totalVirtualElevation += GetVirtualElevation(chungParams, timeValues, powerValues, speedValues, airSpeedValues, i);
+                totalVirtualElevation += GetVirtualElevation(chungParams, timeValues, powerValues, speedValues, windValues, windCalib, i);
             }
             return totalVirtualElevation;
         }
 
-        private double GetVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> airSpeedValues, int i)
+        private double GetVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> windValues, double windCalib, int i)
         {
             // get parameters
             const double g = 9.81;
@@ -151,7 +204,7 @@ namespace MyChung
 
             // calculate slope
             double v = speedValues[i];
-            double va = airSpeedValues[i];
+            double va = v + windCalib * windValues[i];
             double w = powerValues[i];
             double s = w / (m * g * v) - Crr - a / g - (rho * CdA * va * va) / (2 * m * g);
 
