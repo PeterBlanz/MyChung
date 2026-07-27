@@ -23,9 +23,10 @@ namespace MyChung
             txtCrr.Text = (0.0028).ToString();
             txtMass.Text = (90.0).ToString();
             txtEff.Text = (98.0).ToString();
-            txtTrimMinDist.Text = (0.0).ToString();
-            txtTrimMaxDist.Text = (1000000.0).ToString();
-            txtWindCalib.Text = (0.105).ToString();
+            txtTrimStart.Text = (0.0).ToString();
+            txtTrimEnd.Text = (0.0).ToString();
+            txtWindCalib.Text = (1.0).ToString();
+            txtSpeedCalib.Text = (1.0).ToString();
         }
 
         private void ProcessFitFile(string fileName)
@@ -38,7 +39,7 @@ namespace MyChung
             List<double> windValues = new List<double>();
 
             // parse limits
-            if (!double.TryParse(txtTrimMinDist.Text, out double trimMinDist) || !double.TryParse(txtTrimMaxDist.Text, out double trimMaxDist))
+            if (!double.TryParse(txtTrimStart.Text, out double trimStart) || !double.TryParse(txtTrimEnd.Text, out double trimEnd))
             {
                 MessageBox.Show("Failed to parse trim limits!");
                 return;
@@ -48,6 +49,13 @@ namespace MyChung
             if (!double.TryParse(txtWindCalib.Text, out double windCalib))
             {
                 MessageBox.Show("Failed to parse wind calibration factor!");
+                return;
+            }
+
+            // parse speed calibration factor
+            if (!double.TryParse(txtSpeedCalib.Text, out double speedCalib))
+            {
+                MessageBox.Show("Failed to parse speed calibration factor!");
                 return;
             }
 
@@ -64,12 +72,8 @@ namespace MyChung
                 FitMessages fitMessages = fitListener.FitMessages;
                 foreach (RecordMesg mesg in fitMessages.RecordMesgs)
                 {
-                    // check trimming conditions
-                    double dist = mesg.Fields.FirstOrDefault(f => f.Name.ToLower() == "distance").ValueOrDefault(distValues);
-                    if (dist < trimMinDist || dist > trimMaxDist) continue;
-                    distValues.Add(dist);
-
                     // add data
+                    distValues.Add(mesg.Fields.FirstOrDefault(f => f.Name.ToLower() == "distance").ValueOrDefault(distValues));
                     timeValues.Add(mesg.Fields.FirstOrDefault(f => f.Name.ToLower() == "timestamp").ValueOrDefault(timeValues));
                     powerValues.Add(mesg.Fields.FirstOrDefault(f => f.Name.ToLower() == "power").ValueOrDefault(powerValues));
                     speedValues.Add(mesg.Fields.FirstOrDefault(f => f.Name.ToLower() == "speed").ValueOrDefault(speedValues));
@@ -82,6 +86,34 @@ namespace MyChung
             {
                 MessageBox.Show("Data set lengths must match!");
                 return;
+            }
+
+            // scale
+            if (speedCalib != 1)
+            {
+                for (int i = 0; i < distValues.Count; i++)
+                {
+                    distValues[i] *= speedCalib;
+                    speedValues[i] *= speedCalib;
+                }
+            }
+
+            // trim
+            if (trimStart > 0 || trimEnd > 0)
+            {
+                double maxDist = distValues[distValues.Count - 1] - trimEnd;
+                for (int i = 0; i < distValues.Count; i++)
+                {
+                    if (distValues[i] < trimStart || distValues[i] > maxDist)
+                    {
+                        distValues.RemoveAt(i);
+                        timeValues.RemoveAt(i);
+                        powerValues.RemoveAt(i);
+                        speedValues.RemoveAt(i);
+                        windValues.RemoveAt(i);
+                        i--;
+                    }
+                }
             }
 
             // analyze

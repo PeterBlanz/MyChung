@@ -42,12 +42,14 @@ namespace MyChung
             this.butDens = new System.Windows.Forms.Button();
             this.txtEff = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.txtTrimMinDist = new System.Windows.Forms.TextBox();
+            this.txtTrimStart = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.txtTrimMaxDist = new System.Windows.Forms.TextBox();
+            this.txtTrimEnd = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.txtWindCalib = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.txtSpeedCalib = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // butBrowse
@@ -174,41 +176,41 @@ namespace MyChung
             this.label5.TabIndex = 11;
             this.label5.Text = "Drive train efficiency (%)";
             // 
-            // txtTrimMinDist
+            // txtTrimStart
             // 
-            this.txtTrimMinDist.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtTrimStart.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTrimMinDist.Location = new System.Drawing.Point(12, 274);
-            this.txtTrimMinDist.Name = "txtTrimMinDist";
-            this.txtTrimMinDist.Size = new System.Drawing.Size(360, 20);
-            this.txtTrimMinDist.TabIndex = 14;
+            this.txtTrimStart.Location = new System.Drawing.Point(12, 274);
+            this.txtTrimStart.Name = "txtTrimStart";
+            this.txtTrimStart.Size = new System.Drawing.Size(360, 20);
+            this.txtTrimStart.TabIndex = 14;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(12, 258);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(154, 13);
+            this.label6.Size = new System.Drawing.Size(90, 13);
             this.label6.TabIndex = 13;
-            this.label6.Text = "Trim if distance smaller than (m)";
+            this.label6.Text = "Trim from start (m)";
             // 
-            // txtTrimMaxDist
+            // txtTrimEnd
             // 
-            this.txtTrimMaxDist.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtTrimEnd.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTrimMaxDist.Location = new System.Drawing.Point(12, 323);
-            this.txtTrimMaxDist.Name = "txtTrimMaxDist";
-            this.txtTrimMaxDist.Size = new System.Drawing.Size(360, 20);
-            this.txtTrimMaxDist.TabIndex = 16;
+            this.txtTrimEnd.Location = new System.Drawing.Point(12, 323);
+            this.txtTrimEnd.Name = "txtTrimEnd";
+            this.txtTrimEnd.Size = new System.Drawing.Size(360, 20);
+            this.txtTrimEnd.TabIndex = 16;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(12, 307);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(155, 13);
+            this.label7.Size = new System.Drawing.Size(88, 13);
             this.label7.TabIndex = 15;
-            this.label7.Text = "Trim if distance greater than (m)";
+            this.label7.Text = "Trim from end (m)";
             // 
             // txtWindCalib
             // 
@@ -228,16 +230,36 @@ namespace MyChung
             this.label8.TabIndex = 17;
             this.label8.Text = "Wind calibration factor";
             // 
+            // txtSpeedCalib
+            // 
+            this.txtSpeedCalib.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtSpeedCalib.Location = new System.Drawing.Point(12, 421);
+            this.txtSpeedCalib.Name = "txtSpeedCalib";
+            this.txtSpeedCalib.Size = new System.Drawing.Size(360, 20);
+            this.txtSpeedCalib.TabIndex = 20;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(12, 405);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(183, 13);
+            this.label9.TabIndex = 19;
+            this.label9.Text = "Speed and distance calibration factor";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(384, 526);
+            this.Controls.Add(this.txtSpeedCalib);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.txtWindCalib);
             this.Controls.Add(this.label8);
-            this.Controls.Add(this.txtTrimMaxDist);
+            this.Controls.Add(this.txtTrimEnd);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.txtTrimMinDist);
+            this.Controls.Add(this.txtTrimStart);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.txtEff);
             this.Controls.Add(this.label5);
@@ -276,12 +298,14 @@ namespace MyChung
         private System.Windows.Forms.Button butDens;
         private System.Windows.Forms.TextBox txtEff;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox txtTrimMinDist;
+        private System.Windows.Forms.TextBox txtTrimStart;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox txtTrimMaxDist;
+        private System.Windows.Forms.TextBox txtTrimEnd;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txtWindCalib;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox txtSpeedCalib;
+        private System.Windows.Forms.Label label9;
     }
 }
 
