@@ -108,6 +108,7 @@ namespace MyChung
             List<double> powerValues = new List<double>();
             List<double> speedValues = new List<double>();
             List<double> windValues = new List<double>();
+            List<double> cadenceValues = new List<double>();
 
             // attempt to open .FIT file
             using (FileStream fitSource = new FileStream(fileName, FileMode.Open))
@@ -128,6 +129,7 @@ namespace MyChung
                     powerValues.Add(mesg.Fields.FirstOrDefault(f => f.Name.ToLower() == "power").ValueOrDefault(powerValues));
                     speedValues.Add(mesg.Fields.FirstOrDefault(f => f.Name.ToLower() == "speed").ValueOrDefault(speedValues));
                     windValues.Add(mesg.DeveloperFields.FirstOrDefault(f => f.Name.ToLower() == "wind").ValueOrDefault(windValues));
+                    cadenceValues.Add(mesg.Fields.FirstOrDefault(f => f.Name.ToLower() == "cadence").ValueOrDefault(cadenceValues));
                 }
             }
 
