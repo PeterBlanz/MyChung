@@ -29,7 +29,78 @@ namespace MyChung
             txtSpeedCalib.Text = (1.0).ToString();
         }
 
-        private void ProcessFitFile(string fileName)
+        private bool ParseParameters(out ChungParameters cp)
+        {
+            cp = new ChungParameters();
+
+            // parse trim start
+            if (!double.TryParse(txtTrimStart.Text, out double trimStart))
+            {
+                MessageBox.Show("Failed to parse trim start!");
+                return false;
+            }
+            cp.TrimStart = trimStart;
+
+            // parse trim end
+            if (!double.TryParse(txtTrimEnd.Text, out double trimEnd))
+            {
+                MessageBox.Show("Failed to parse trim end!");
+                return false;
+            }
+            cp.TrimEnd = trimEnd;
+
+            // parse wind calibration factor
+            if (!double.TryParse(txtWindCalib.Text, out double windCalib))
+            {
+                MessageBox.Show("Failed to parse wind calibration factor!");
+                return false;
+            }
+            cp.WindCalib = windCalib;
+
+            // parse speed calibration factor
+            if (!double.TryParse(txtSpeedCalib.Text, out double speedCalib))
+            {
+                MessageBox.Show("Failed to parse speed calibration factor!");
+                return false;
+            }
+            cp.SpeedCalib = speedCalib;
+
+            // parse air density
+            if (!double.TryParse(txtAirDens.Text, out double airDens))
+            {
+                MessageBox.Show("Failed to parse parameters!");
+                return false;
+            }
+            cp.AirDensity = airDens;
+
+            // parse mass
+            if (!double.TryParse(txtMass.Text, out double mass))
+            {
+                MessageBox.Show("Failed to parse mass!");
+                return false;
+            }
+            cp.Mass = mass;
+
+            // parse crr
+            if (!double.TryParse(txtCrr.Text, out double crr))
+            {
+                MessageBox.Show("Failed to parse crr!");
+                return false;
+            }
+            cp.RollingResistance = crr;
+
+            // parse drive train efficiency
+            if (!double.TryParse(txtEff.Text, out double eff))
+            {
+                MessageBox.Show("Failed to parse drive train efficiency!");
+                return false;
+            }
+            cp.Efficiency = eff;
+
+            return true;
+        }
+
+        private Tuple<double, double> ProcessFitFile(string fileName, ChungParameters cp)
         {
             // create empty lists
             List<double> timeValues = new List<double>();
@@ -37,27 +108,6 @@ namespace MyChung
             List<double> powerValues = new List<double>();
             List<double> speedValues = new List<double>();
             List<double> windValues = new List<double>();
-
-            // parse limits
-            if (!double.TryParse(txtTrimStart.Text, out double trimStart) || !double.TryParse(txtTrimEnd.Text, out double trimEnd))
-            {
-                MessageBox.Show("Failed to parse trim limits!");
-                return;
-            }
-
-            // parse wind calibration factor
-            if (!double.TryParse(txtWindCalib.Text, out double windCalib))
-            {
-                MessageBox.Show("Failed to parse wind calibration factor!");
-                return;
-            }
-
-            // parse speed calibration factor
-            if (!double.TryParse(txtSpeedCalib.Text, out double speedCalib))
-            {
-                MessageBox.Show("Failed to parse speed calibration factor!");
-                return;
-            }
 
             // attempt to open .FIT file
             using (FileStream fitSource = new FileStream(fileName, FileMode.Open))
@@ -81,30 +131,23 @@ namespace MyChung
                 }
             }
 
-            // check data sets
-            if (timeValues.Count != powerValues.Count || timeValues.Count != speedValues.Count || timeValues.Count != distValues.Count)
-            {
-                MessageBox.Show("Data set lengths must match!");
-                return;
-            }
-
-            // scale
-            if (speedCalib != 1)
+            // scale speed and distance
+            if (cp.SpeedCalib != 1)
             {
                 for (int i = 0; i < distValues.Count; i++)
                 {
-                    distValues[i] *= speedCalib;
-                    speedValues[i] *= speedCalib;
+                    distValues[i] *= cp.SpeedCalib;
+                    speedValues[i] *= cp.SpeedCalib;
                 }
             }
 
             // trim
-            if (trimStart > 0 || trimEnd > 0)
+            if (cp.TrimStart > 0 || cp.TrimEnd > 0)
             {
-                double maxDist = distValues[distValues.Count - 1] - trimEnd;
+                double maxDist = distValues[distValues.Count - 1] - cp.TrimEnd;
                 for (int i = 0; i < distValues.Count; i++)
                 {
-                    if (distValues[i] < trimStart || distValues[i] > maxDist)
+                    if (distValues[i] < cp.TrimStart || distValues[i] > maxDist)
                     {
                         distValues.RemoveAt(i);
                         timeValues.RemoveAt(i);
@@ -116,41 +159,19 @@ namespace MyChung
                 }
             }
 
-            // analyze
-            DoChungAnalysis(timeValues, powerValues, speedValues, windValues, windCalib);
-        }
+            // pre-multiply power values
+            double eff = cp.Efficiency * 0.01;
+            for (int i = 0; i < powerValues.Count; i++) powerValues[i] *= eff;
 
-        private double Calibrate(List<double> timeValues, List<double> distValues, List<double> powerValues, List<double> speedValues, List<double> windValues, double windCalib)
-        {
-            // TEMP!! better splitting needed
-            List<double> lapTimeValues = new List<double>();
-            List<double> lapPowerValues = new List<double>();
-            List<double> lapSpeedValues = new List<double>();
-            List<double> lapWindValues = new List<double>();
-            List<double> cdaValues = new List<double>();
-            int threshold = 400;
-            for (int i = 0; i < distValues.Count; i++)
+            // scale wind values
+            if(cp.WindCalib != 1)
             {
-                lapTimeValues.Add(timeValues[i]);
-                lapPowerValues.Add(powerValues[i]);
-                lapSpeedValues.Add(speedValues[i]);
-                lapWindValues.Add(windValues[i]);
-
-                if (distValues[i] > threshold)
-                {
-                    cdaValues.Add(DoChungAnalysis(lapTimeValues, lapPowerValues, lapSpeedValues, lapWindValues, windCalib, true));
-                    threshold += 400;
-                    lapTimeValues.Clear();
-                    lapPowerValues.Clear();
-                    lapSpeedValues.Clear();
-                    lapWindValues.Clear();
-                }
+                for (int i = 0; i < windValues.Count; i++)
+                    windValues[i] *= cp.WindCalib;
             }
 
-            cdaValues.RemoveAt(0);
-            cdaValues.RemoveAt(cdaValues.Count - 1);
-            double stdev = GetStandardDeviation(cdaValues);
-            return stdev;
+            // analyze
+            return DoChungAnalysis(timeValues, powerValues, speedValues, windValues, cp);
         }
 
         private double GetStandardDeviation(List<double> values)
@@ -167,63 +188,47 @@ namespace MyChung
             return Math.Sqrt(sumOfSquares / (values.Count - 1));
         }
 
-        private double DoChungAnalysis(List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> windValues, double windCalib, bool silent = false)
+        private Tuple<double, double> DoChungAnalysis(List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> windValues, ChungParameters cp)
         {
-            // parse parameters TODO: individual sanity checks
-            if (!double.TryParse(txtAirDens.Text, out double airDens) || !double.TryParse(txtMass.Text, out double mass) || !double.TryParse(txtCrr.Text, out double crr) || !double.TryParse(txtEff.Text, out double eff))
-            {
-                MessageBox.Show("Failed to parse parameters!");
-                return double.NaN;
-            }
-
-            // pre-multiply power values
-            eff *= 0.01;
-            for (int i = 0; i < powerValues.Count; i++) powerValues[i] *= eff;
-
             // solve CdA
-            ChungParameters chungParams = new ChungParameters { AirDensity = airDens, Mass = mass, RollingResistance = crr, CdA = 0.25 };
-            double totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues, windValues, windCalib);
+            double CdA = 0.25;
+            double totalVirtualElevation = GetTotalVirtualElevation(cp, CdA, timeValues, powerValues, speedValues, windValues);
             int iterationDirection = Math.Sign(totalVirtualElevation);
             for (int i = 0; i < 1000000; i++)
             {
                 if (Math.Sign(totalVirtualElevation) != iterationDirection) break;
-                chungParams.CdA += iterationDirection * 0.000001;
-                totalVirtualElevation = GetTotalVirtualElevation(chungParams, timeValues, powerValues, speedValues, windValues, windCalib);
+                CdA += iterationDirection * 0.000001;
+                totalVirtualElevation = GetTotalVirtualElevation(cp, CdA, timeValues, powerValues, speedValues, windValues);
             }
 
-            // place result in clipboard, show message
-            string cdaString = chungParams.CdA.ToString("0.00000");
-            Clipboard.SetText($"{timeValues[0]}\t{cdaString}");
-            if (!silent) MessageBox.Show($"CdA: {cdaString} m²\n\nResult has been copied into clipboard.");
-            return chungParams.CdA;
+            return Tuple.Create(timeValues[0], CdA);
         }
 
-        private double GetTotalVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> windValues, double windCalib)
+        private double GetTotalVirtualElevation(ChungParameters chungParams, double CdA, List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> windValues)
         {
             double totalVirtualElevation = 0;
             for (int i = 1; i < timeValues.Count - 1; i++)
             {
-                totalVirtualElevation += GetVirtualElevation(chungParams, timeValues, powerValues, speedValues, windValues, windCalib, i);
+                totalVirtualElevation += GetVirtualElevation(chungParams, CdA, timeValues, powerValues, speedValues, windValues, i);
             }
             return totalVirtualElevation;
         }
 
-        private double GetVirtualElevation(ChungParameters chungParams, List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> windValues, double windCalib, int i)
+        private double GetVirtualElevation(ChungParameters chungParams, double CdA, List<double> timeValues, List<double> powerValues, List<double> speedValues, List<double> windValues, int i)
         {
             // get parameters
             const double g = 9.81;
             double Crr = chungParams.RollingResistance;
-            double CdA = chungParams.CdA;
             double m = chungParams.Mass;
             double rho = chungParams.AirDensity;
 
             // calculate acceleration
-            double dt = 0.5 * (timeValues[i + 1] - timeValues[i - 1]);
-            double a = (speedValues[i + 1] - speedValues[i - 1]) / (2 * dt);
+            double dt = timeValues[i + 1] - timeValues[i - 1];
+            double a = (speedValues[i + 1] - speedValues[i - 1]) / dt;
 
             // calculate slope
             double v = speedValues[i];
-            double va = v + windCalib * windValues[i];
+            double va = v + windValues[i];
             double w = powerValues[i];
             double s = w / (m * g * v) - Crr - a / g - (rho * CdA * va * va) / (2 * m * g);
 
@@ -232,15 +237,76 @@ namespace MyChung
         }
 
 
-        private void ButBrowse_Click(object sender, EventArgs e)
+        private void ButBrowseA_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog() { Title = "Select FIT file", Filter = "FIT files|*.fit|All files|*.*" };
-            if (ofd.ShowDialog() == DialogResult.OK) txtFileName.Text = ofd.FileName;
+            ofd.Multiselect = true;
+            if (ofd.ShowDialog() == DialogResult.OK) txtFileNamesA.Text = string.Join("\r\n", ofd.FileNames);
+        }
+
+        private void ButBrowseB_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog() { Title = "Select FIT file", Filter = "FIT files|*.fit|All files|*.*" };
+            ofd.Multiselect = true;
+            if (ofd.ShowDialog() == DialogResult.OK) txtFileNamesB.Text = string.Join("\r\n", ofd.FileNames);
         }
 
         private void ButProcess_Click(object sender, EventArgs e)
         {
-            ProcessFitFile(txtFileName.Text);
+            this.Enabled = false;
+            try
+            {
+                if (!ParseParameters(out ChungParameters cp)) return;
+
+                // process list A
+                string[] fileNamesA = txtFileNamesA.Text.Split('\n');
+                List<Tuple<double, double>> resultsA = new List<Tuple<double, double>>();
+                foreach (string fileName in fileNamesA)
+                {
+                    resultsA.Add(ProcessFitFile(fileName.Trim(), cp));
+                }
+
+                // process list B
+                string[] fileNamesB = txtFileNamesB.Text.Split('\n');
+                List<Tuple<double, double>> resultsB = new List<Tuple<double, double>>();
+                foreach (string fileName in fileNamesB)
+                {
+                    resultsB.Add(ProcessFitFile(fileName.Trim(), cp));
+                }
+
+                // get results
+                StringBuilder sb = new StringBuilder();
+                int maxCount = Math.Max(resultsA.Count, resultsB.Count);
+                for (int i = 0; i < maxCount; i++)
+                {
+                    // result A
+                    if (i < resultsA.Count)
+                    {
+                        sb.Append(resultsA[i].Item1);
+                        sb.Append('\t');
+                        sb.Append(resultsA[i].Item2);
+                    }
+                    else sb.Append("0\t0");
+
+                    // result B
+                    if (i < resultsB.Count)
+                    {
+                        sb.Append('\t');
+                        sb.Append(resultsB[i].Item1);
+                        sb.Append('\t');
+                        sb.Append(resultsB[i].Item2);
+                    }
+                    else sb.Append("\t0\t0");
+
+                    sb.AppendLine();
+                }
+
+                Clipboard.SetText(sb.ToString());
+            }
+            finally
+            {
+                this.Enabled = true;
+            }
         }
 
         private class ChungParameters
@@ -248,7 +314,11 @@ namespace MyChung
             public double Mass { get; set; }
             public double RollingResistance { get; set; }
             public double AirDensity { get; set; }
-            public double CdA { get; set; }
+            public double TrimEnd { get; set; }
+            public double TrimStart { get; set; }
+            public double SpeedCalib { get; set; }
+            public double WindCalib { get; set; }
+            public double Efficiency { get; set; }
         }
 
         private void ButDens_Click(object sender, EventArgs e)
