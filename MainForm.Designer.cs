@@ -53,12 +53,13 @@ namespace MyChung
             this.label10 = new System.Windows.Forms.Label();
             this.txtFileNamesB = new System.Windows.Forms.TextBox();
             this.butBrowseB = new System.Windows.Forms.Button();
+            this.chkRemoveZeroPower = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // butBrowseA
             // 
             this.butBrowseA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.butBrowseA.Location = new System.Drawing.Point(197, 185);
+            this.butBrowseA.Location = new System.Drawing.Point(197, 180);
             this.butBrowseA.Name = "butBrowseA";
             this.butBrowseA.Size = new System.Drawing.Size(75, 20);
             this.butBrowseA.TabIndex = 0;
@@ -73,7 +74,7 @@ namespace MyChung
             this.txtFileNamesA.Location = new System.Drawing.Point(12, 29);
             this.txtFileNamesA.Multiline = true;
             this.txtFileNamesA.Name = "txtFileNamesA";
-            this.txtFileNamesA.Size = new System.Drawing.Size(260, 150);
+            this.txtFileNamesA.Size = new System.Drawing.Size(260, 145);
             this.txtFileNamesA.TabIndex = 1;
             // 
             // label1
@@ -89,7 +90,7 @@ namespace MyChung
             // 
             this.butProcess.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.butProcess.Location = new System.Drawing.Point(12, 414);
+            this.butProcess.Location = new System.Drawing.Point(12, 424);
             this.butProcess.Name = "butProcess";
             this.butProcess.Size = new System.Drawing.Size(535, 37);
             this.butProcess.TabIndex = 3;
@@ -101,7 +102,7 @@ namespace MyChung
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 223);
+            this.label2.Location = new System.Drawing.Point(9, 203);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(92, 13);
             this.label2.TabIndex = 4;
@@ -110,7 +111,7 @@ namespace MyChung
             // txtAirDens
             // 
             this.txtAirDens.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.txtAirDens.Location = new System.Drawing.Point(12, 239);
+            this.txtAirDens.Location = new System.Drawing.Point(12, 219);
             this.txtAirDens.Name = "txtAirDens";
             this.txtAirDens.Size = new System.Drawing.Size(210, 20);
             this.txtAirDens.TabIndex = 5;
@@ -118,7 +119,7 @@ namespace MyChung
             // txtMass
             // 
             this.txtMass.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMass.Location = new System.Drawing.Point(287, 239);
+            this.txtMass.Location = new System.Drawing.Point(287, 219);
             this.txtMass.Name = "txtMass";
             this.txtMass.Size = new System.Drawing.Size(260, 20);
             this.txtMass.TabIndex = 7;
@@ -127,7 +128,7 @@ namespace MyChung
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(284, 223);
+            this.label3.Location = new System.Drawing.Point(284, 203);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(89, 13);
             this.label3.TabIndex = 6;
@@ -136,7 +137,7 @@ namespace MyChung
             // txtCrr
             // 
             this.txtCrr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.txtCrr.Location = new System.Drawing.Point(12, 287);
+            this.txtCrr.Location = new System.Drawing.Point(12, 267);
             this.txtCrr.Name = "txtCrr";
             this.txtCrr.Size = new System.Drawing.Size(260, 20);
             this.txtCrr.TabIndex = 9;
@@ -145,7 +146,7 @@ namespace MyChung
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(9, 271);
+            this.label4.Location = new System.Drawing.Point(9, 251);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(150, 13);
             this.label4.TabIndex = 8;
@@ -154,7 +155,7 @@ namespace MyChung
             // butDens
             // 
             this.butDens.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.butDens.Location = new System.Drawing.Point(228, 238);
+            this.butDens.Location = new System.Drawing.Point(228, 218);
             this.butDens.Name = "butDens";
             this.butDens.Size = new System.Drawing.Size(44, 20);
             this.butDens.TabIndex = 10;
@@ -165,7 +166,7 @@ namespace MyChung
             // txtEff
             // 
             this.txtEff.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtEff.Location = new System.Drawing.Point(287, 287);
+            this.txtEff.Location = new System.Drawing.Point(287, 267);
             this.txtEff.Name = "txtEff";
             this.txtEff.Size = new System.Drawing.Size(260, 20);
             this.txtEff.TabIndex = 12;
@@ -174,7 +175,7 @@ namespace MyChung
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(284, 271);
+            this.label5.Location = new System.Drawing.Point(284, 251);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(120, 13);
             this.label5.TabIndex = 11;
@@ -183,7 +184,7 @@ namespace MyChung
             // txtTrimStart
             // 
             this.txtTrimStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.txtTrimStart.Location = new System.Drawing.Point(12, 335);
+            this.txtTrimStart.Location = new System.Drawing.Point(12, 315);
             this.txtTrimStart.Name = "txtTrimStart";
             this.txtTrimStart.Size = new System.Drawing.Size(260, 20);
             this.txtTrimStart.TabIndex = 14;
@@ -192,7 +193,7 @@ namespace MyChung
             // 
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 319);
+            this.label6.Location = new System.Drawing.Point(9, 299);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(90, 13);
             this.label6.TabIndex = 13;
@@ -201,7 +202,7 @@ namespace MyChung
             // txtTrimEnd
             // 
             this.txtTrimEnd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTrimEnd.Location = new System.Drawing.Point(287, 335);
+            this.txtTrimEnd.Location = new System.Drawing.Point(287, 315);
             this.txtTrimEnd.Name = "txtTrimEnd";
             this.txtTrimEnd.Size = new System.Drawing.Size(260, 20);
             this.txtTrimEnd.TabIndex = 16;
@@ -210,7 +211,7 @@ namespace MyChung
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(284, 319);
+            this.label7.Location = new System.Drawing.Point(284, 299);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(88, 13);
             this.label7.TabIndex = 15;
@@ -219,7 +220,7 @@ namespace MyChung
             // txtWindCalib
             // 
             this.txtWindCalib.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.txtWindCalib.Location = new System.Drawing.Point(12, 383);
+            this.txtWindCalib.Location = new System.Drawing.Point(12, 363);
             this.txtWindCalib.Name = "txtWindCalib";
             this.txtWindCalib.Size = new System.Drawing.Size(260, 20);
             this.txtWindCalib.TabIndex = 18;
@@ -228,7 +229,7 @@ namespace MyChung
             // 
             this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(9, 367);
+            this.label8.Location = new System.Drawing.Point(9, 347);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(113, 13);
             this.label8.TabIndex = 17;
@@ -237,7 +238,7 @@ namespace MyChung
             // txtSpeedCalib
             // 
             this.txtSpeedCalib.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSpeedCalib.Location = new System.Drawing.Point(287, 383);
+            this.txtSpeedCalib.Location = new System.Drawing.Point(287, 363);
             this.txtSpeedCalib.Name = "txtSpeedCalib";
             this.txtSpeedCalib.Size = new System.Drawing.Size(260, 20);
             this.txtSpeedCalib.TabIndex = 20;
@@ -246,7 +247,7 @@ namespace MyChung
             // 
             this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(284, 367);
+            this.label9.Location = new System.Drawing.Point(284, 347);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(164, 13);
             this.label9.TabIndex = 19;
@@ -269,13 +270,13 @@ namespace MyChung
             this.txtFileNamesB.Location = new System.Drawing.Point(287, 29);
             this.txtFileNamesB.Multiline = true;
             this.txtFileNamesB.Name = "txtFileNamesB";
-            this.txtFileNamesB.Size = new System.Drawing.Size(260, 150);
+            this.txtFileNamesB.Size = new System.Drawing.Size(260, 145);
             this.txtFileNamesB.TabIndex = 2;
             // 
             // butBrowseB
             // 
             this.butBrowseB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.butBrowseB.Location = new System.Drawing.Point(472, 185);
+            this.butBrowseB.Location = new System.Drawing.Point(472, 180);
             this.butBrowseB.Name = "butBrowseB";
             this.butBrowseB.Size = new System.Drawing.Size(75, 20);
             this.butBrowseB.TabIndex = 21;
@@ -283,11 +284,23 @@ namespace MyChung
             this.butBrowseB.UseVisualStyleBackColor = true;
             this.butBrowseB.Click += new System.EventHandler(this.ButBrowseB_Click);
             // 
+            // chkRemoveZeroPower
+            // 
+            this.chkRemoveZeroPower.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.chkRemoveZeroPower.AutoSize = true;
+            this.chkRemoveZeroPower.Location = new System.Drawing.Point(12, 397);
+            this.chkRemoveZeroPower.Name = "chkRemoveZeroPower";
+            this.chkRemoveZeroPower.Size = new System.Drawing.Size(155, 17);
+            this.chkRemoveZeroPower.TabIndex = 24;
+            this.chkRemoveZeroPower.Text = "Remove power meter zeros";
+            this.chkRemoveZeroPower.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(559, 461);
+            this.ClientSize = new System.Drawing.Size(559, 471);
+            this.Controls.Add(this.chkRemoveZeroPower);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.txtFileNamesB);
             this.Controls.Add(this.butBrowseB);
@@ -348,6 +361,7 @@ namespace MyChung
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox txtFileNamesB;
         private System.Windows.Forms.Button butBrowseB;
+        private System.Windows.Forms.CheckBox chkRemoveZeroPower;
     }
 }
 

@@ -151,11 +151,20 @@ namespace MyChung
                 {
                     if (distValues[i] < cp.TrimStart || distValues[i] > maxDist)
                     {
-                        distValues.RemoveAt(i);
-                        timeValues.RemoveAt(i);
-                        powerValues.RemoveAt(i);
-                        speedValues.RemoveAt(i);
-                        windValues.RemoveAt(i);
+                        RemoveFromLists(i, distValues, timeValues, powerValues, speedValues, windValues, cadenceValues);
+                        i--;
+                    }
+                }
+            }
+
+            // remove zero-power data points
+            if (chkRemoveZeroPower.Checked)
+            {
+                for (int i = 0; i < distValues.Count; i++)
+                {
+                    if (powerValues[i] == 0 && cadenceValues[i] == 0)
+                    {
+                        RemoveFromLists(i, distValues, timeValues, powerValues, speedValues, windValues, cadenceValues);
                         i--;
                     }
                 }
@@ -166,7 +175,7 @@ namespace MyChung
             for (int i = 0; i < powerValues.Count; i++) powerValues[i] *= eff;
 
             // scale wind values
-            if(cp.WindCalib != 1)
+            if (cp.WindCalib != 1)
             {
                 for (int i = 0; i < windValues.Count; i++)
                     windValues[i] *= cp.WindCalib;
@@ -174,6 +183,14 @@ namespace MyChung
 
             // analyze
             return DoChungAnalysis(timeValues, powerValues, speedValues, windValues, cp);
+        }
+
+        private void RemoveFromLists(int index, params List<double>[] lists)
+        {
+            foreach(var list in lists)
+            {
+                list.RemoveAt(index);
+            }
         }
 
         private double GetStandardDeviation(List<double> values)
@@ -265,6 +282,7 @@ namespace MyChung
                 List<Tuple<double, double>> resultsA = new List<Tuple<double, double>>();
                 foreach (string fileName in fileNamesA)
                 {
+                    if (string.IsNullOrWhiteSpace(fileName)) continue;
                     resultsA.Add(ProcessFitFile(fileName.Trim(), cp));
                 }
 
@@ -273,6 +291,7 @@ namespace MyChung
                 List<Tuple<double, double>> resultsB = new List<Tuple<double, double>>();
                 foreach (string fileName in fileNamesB)
                 {
+                    if (string.IsNullOrWhiteSpace(fileName)) continue;
                     resultsB.Add(ProcessFitFile(fileName.Trim(), cp));
                 }
 
@@ -303,7 +322,11 @@ namespace MyChung
                     sb.AppendLine();
                 }
 
-                Clipboard.SetText(sb.ToString());
+                // store results in clipboard
+                if (sb.Length > 0)
+                {
+                    Clipboard.SetText(sb.ToString());
+                }
             }
             finally
             {
